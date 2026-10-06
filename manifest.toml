@@ -39,15 +39,11 @@ inputs = [{ type = "file" }, { type = "file" }, { type = "file" }]
 outputs = [
   { path = "singscore_scores.tsv", format = "tsv" },
   { path = "singscore.RDS", format = "r_rds" },
-  { path = "singscore.log", format = "singscore_log" },
+  { path = "singscore.log", format = "singscore_log" }
 ]
 
-[nodes.params]
-{}
 
 [nodes.command]
 interpreter = "Rscript"
 script_file = "scripts/singscore.sh"
 
-[nodes.command.env]
-{}

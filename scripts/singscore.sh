@@ -31,7 +31,7 @@ gs_path  <- Sys.getenv("AUTONOMICS_INPUT1")
 smp_path <- Sys.getenv("AUTONOMICS_INPUT2")
 score_path <- Sys.getenv("AUTONOMICS_OUTPUT0")
 rds_path <- Sys.getenv("AUTONOMICS_OUTPUT1")
-log_path <- Sys.getenv("AUTONOMICS_OUTPUT3")
+log_path <- Sys.getenv("AUTONOMICS_OUTPUT2")
 
 expr <- as.matrix(read.delim(mat_path, row.names = 1, check.names = FALSE))
 geneSet <- read.delim(gs_path, check.names = FALSE, stringsAsFactors = FALSE)
@@ -70,7 +70,21 @@ flush.console()
 upSet <- geneSet$gene[geneSet$direction == "up"]
 downSet <- geneSet$gene[geneSet$direction == "down"]
 rank_data <- rankGenes(expr, tiesMethod = "average")
-ss <- simpleScore(rank_data, upSet = upSet, downSet = downSet)
+# One-directional signatures: the official simpleScore treats a MISSING
+# downSet as one-sided; passing an empty vector instead silently yields a
+# zero-row score table (review counterexample). Branch explicitly - the
+# call shape follows the gene set, it is never a tunable.
+ss <- if (length(downSet) == 0) {
+  simpleScore(rank_data, upSet = upSet)
+} else if (length(upSet) == 0) {
+  # simpleScore's only required set is upSet; a DOWN-only signature has no
+  # documented single-set form, and reusing the up slot would silently flip
+  # the direction. Refuse instead of guessing - the study-plan side must
+  # express such sets explicitly.
+  stop("down-only gene sets are not expressible through simpleScore without guessing direction; refuse", call. = FALSE)
+} else {
+  simpleScore(rank_data, upSet = upSet, downSet = downSet)
+}
 # singscore 1.32.0 returns the per-sample score data.frame directly
 # (TotalScore/UpScore/DownScore columns, rownames = samples).
 scores <- as.data.frame(ss)
