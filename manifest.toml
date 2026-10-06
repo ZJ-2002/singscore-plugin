@@ -7,7 +7,7 @@ plugin_name = "singscore"
 # nothing), 3) daemon/deployed acceptance - until then the row stays
 # PENDING in the node acceptance matrix and z-mean is sensitivity only.
 [image]
-reference = "localhost/singscore-official:1.32.0"
+reference = "ghcr.io/zj-2002/singscore-official@sha256:04981a66d7c3fc7055a185a0102dc9f337dd63381b676681c08e52e8c22e2ca5"
 tag = "1.32.0"
 upstream = "official Bioconductor singscore 1.32.0 @ Bioc release 3.23 (rankGenes + simpleScore), R 4.6.1; support stack on the 2026-09-13 CRAN snapshot shared with the MRlap/TwoSampleMR family images"
 license = "GPL-3"
